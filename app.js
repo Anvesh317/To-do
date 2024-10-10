@@ -1,19 +1,23 @@
-let tasks = [];
+let tasks = JSON.parse(localStorage.getItem('tasks')) || []; 
 
-const addTask = () => {
-    const taskInput = document.getElementById('taskinput');
-    const text = taskInput.value.trim();
+
+const addtask = () => {
+    const taskinput = document.getElementById('taskinput');
+    const text = taskinput.value.trim();
 
     if (text) {
         tasks.push({ text: text, completed: false });
-        taskInput.value = "";
-        updateTaskList();
+        taskinput.value = "";
+        updateTaskList(); 
+        saveTasks(); 
+        updateProgress(); 
     }
 };
 
+
 const updateTaskList = () => {
-    const taskList = document.getElementById('task-list');
-    taskList.innerHTML = "";
+    const tasklist = document.getElementById('task-list');
+    tasklist.innerHTML = "";
 
     tasks.forEach((task, index) => {
         const listItem = document.createElement('li');
@@ -24,70 +28,77 @@ const updateTaskList = () => {
                 <p>${task.text}</p>
             </div>
             <div class="icons">
-                <img src="./images/edit.png" onclick="editTask(${index})" />
-                <img src="./images/bin.png" onclick="deleteTask(${index})" />
+                <img src="./images/edit.png" onClick="edittask(${index})" />
+                <img src="./images/bin.png" onClick="deletetask(${index})" />
             </div>
         </div>
         `;
 
+       
         listItem.querySelector('.checkbox').addEventListener('change', () => toggleTaskComplete(index));
-        taskList.append(listItem);
+        tasklist.append(listItem);
     });
-
-    updateStats();
+    updateProgress(); 
 };
 
 const toggleTaskComplete = (index) => {
     tasks[index].completed = !tasks[index].completed;
     updateTaskList();
+    saveTasks();  
+    updateProgress();  
 };
 
-const deleteTask = (index) => {
-    tasks.splice(index, 1);
-    updateTaskList();
+const saveTasks = () => {
+    localStorage.setItem('tasks', JSON.stringify(tasks));  
 };
 
-const editTask = (index) => {
-    const newText = prompt("Edit task:", tasks[index].text);
-    if (newText) {
-        tasks[index].text = newText.trim();
+
+const edittask = (index) => {
+    const newTaskText = prompt('Edit your task:', tasks[index].text);
+    if (newTaskText !== null && newTaskText.trim() !== "") {
+        tasks[index].text = newTaskText.trim();
         updateTaskList();
+        saveTasks();  
     }
 };
 
-const updateStats = () => {
+const deletetask = (index) => {
+    tasks.splice(index, 1);  
+    updateTaskList();
+    saveTasks();  
+    updateProgress();  
+};
+
+const updateProgress = () => {
     const completedTasks = tasks.filter(task => task.completed).length;
     const totalTasks = tasks.length;
-    const progressBar = document.getElementById('progress');
-    const numbers = document.getElementById('numbers');
+    const progressElement = document.getElementById('progress');
+    const statsElement = document.getElementById('numbers');
 
-    progressBar.style.width = totalTasks ? `${(completedTasks / totalTasks) * 100}%` : '0%';
-    numbers.textContent = `${completedTasks}/${totalTasks}`;
+    statsElement.textContent = `${completedTasks}/${totalTasks}`;
+
+    const progressPercentage = totalTasks === 0 ? 0 : (completedTasks / totalTasks) * 100;
+    progressElement.style.width = `${progressPercentage}%`;
 
     if (completedTasks === totalTasks && totalTasks > 0) {
-        triggerCelebration();
+        launchConfetti(); 
     }
 };
 
-const triggerCelebration = () => {
-    const confettiContainer = document.getElementById('confetti-container');
-    confettiContainer.innerHTML = '';  
-
-    for (let i = 0; i < 100; i++) {
-        const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
-        confetti.style.left = `${Math.random() * 100}vw`;
-        confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
-        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
-        confettiContainer.appendChild(confetti);
-    }
-
-    setTimeout(() => {
-        confettiContainer.innerHTML = '';  // 5 seconds animation
-    }, 5000);
+const launchConfetti = () => {
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+    });
 };
 
-document.getElementById("newtask").addEventListener('click', function (e) {
+
+document.getElementById("newtask").addEventListener('click', function(e) {
     e.preventDefault();
-    addTask();
+    addtask();
 });
+
+
+updateTaskList();
+updateProgress();
