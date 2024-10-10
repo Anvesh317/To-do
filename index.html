@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="./images/todo.png">
+</head>
+<body>
+    <div class="container">
+        <div class="stats-container">
+            <div class="details">
+                <h1>ToDo</h1>
+                <p>Keep going</p>
+                <div class="progress-bar">
+                    <div id="progress"></div>
+                </div>
+            </div>
+            <div class="stats-numbers">
+                <p id="numbers">0/0</p>
+            </div> 
+        </div>
+        <form action="">
+            <input type="text" placeholder="Add task" id="taskinput">
+            <button type="submit" id="newtask">+</button>
+        </form>
+
+        <ul class="task-list" id="task-list"></ul>
+    </div>
+
+    <div id="confetti-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
